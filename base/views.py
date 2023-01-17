@@ -6,7 +6,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.db.models import Q
 from .forms import RoomForm
-from .models import Room, Topic
+from .models import Room, Topic, Message
 
 # Create your views here.
 
@@ -66,13 +66,39 @@ def home(request):
         )
     topic = Topic.objects.all()
     room_count = rooms.count()
-    context = {'rooms': rooms, 'topics': topic, 'room_count': room_count}
+
+    msgs = Message.objects.all().order_by('-created')
+    if q:
+        msgs = msgs.filter(Q(room__topic__name__icontains=q))
+
+    context = {'rooms': rooms, 'topics': topic, 'room_count': room_count, 'msgs': msgs}
     return render(request, 'base/home.html', context)
 
 def room(request,pk):
     room = Room.objects.get(id=pk)
-    context = {'room': room}
+    msgs = room.message_set.all().order_by('created')
+    participants = room.participants.all()
+    if request.method == 'POST':
+        msg = request.POST.get('body')
+        if msg != '':
+            room.message_set.create(user=request.user, body=msg)
+            room.participants.add(request.user)
+            return redirect('room', pk=room.id)
+
+    context = {'room': room, 'msgs': msgs, 'participants': participants}
     return render(request, 'base/room.html', context)
+
+def userProfile(request, pk):
+    user = User.objects.get(id=pk)
+    rooms = user.room_set.all()
+    msgs = user.message_set.all()
+    topics = Topic.objects.all()
+
+    room_count = rooms.count()
+    msg_count = msgs.count()
+
+    context = {'user': user, 'rooms': rooms, 'msgs': msgs, 'topics':topics, 'room_count': room_count, 'msg_count': msg_count}
+    return render(request, 'base/profile.html', context)
 
 @login_required(login_url='login')
 def createRoom(request):
@@ -80,7 +106,9 @@ def createRoom(request):
     if request.method == 'POST':
         form = RoomForm(request.POST)
         if form.is_valid():
-            form.save()
+            room = form.save(commit=False)
+            room.host = request.user
+            room.save()
             return redirect('home')
     context = {'form': form}
     return render(request, 'base/room_form.html', context)
@@ -112,4 +140,16 @@ def deleteRoom(request,pk):
         room.delete()
         return redirect('home')
     context = {'obj': room}
+    return render(request, 'base/delete.html', context)
+
+@login_required
+def deleteMessage(request, pk):
+    msg = Message.objects.get(id=pk)
+    room = msg.room.id
+    if request.user != msg.user:
+        return redirect('home')
+    if request.method == 'POST':
+        msg.delete()
+        return redirect('room', pk=room)
+    context = {'obj': msg}
     return render(request, 'base/delete.html', context)

@@ -1,0 +1,18 @@
+<h3>Recent Activity</h3>
+<hr>
+{% for msg in msgs %}
+<div>
+    <span>
+        <a href="{% url 'user-profile' msg.user.id %}">{{ msg.user }}</a> |
+    </span>
+    <span>
+        {{ msg.created|timesince }} ago
+    </span>
+    <p>
+        replied to "{{ msg.room.name }}"
+        <br>
+        {{ msg.body }}
+    </p>
+</div>
+<hr>
+{% endfor %}
