@@ -1,0 +1,69 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+<style>
+    .room-container {
+        display: grid;
+        grid-template-columns: 3fr 1fr;
+    }
+</style>
+
+<div class="room-container">
+    <div>
+        <h1> {{ room.name }} </h1>
+        <p>
+            {{ room.description }}
+        </p>
+        <div class="comment-wrapper">
+            <h3>Chat</h3>
+            <div>
+                {% for msg in msgs %}
+                <div>
+                    <hr>
+                    <span>
+                        {{ msg.user }} |
+                    </span>
+                    <span>
+                        {{ msg.created|timesince }} ago |
+                    </span>
+                    {% if msg.user == user %}
+                    <a href="{% url 'delete-message' msg.id %}">delete</a>
+                    {% endif %}
+                    <p>
+                        {{ msg.body }}
+                    </p>
+                </div>
+                {% endfor %}
+            </div>
+            {% if user.is_authenticated %}
+            <div class="comment-form">
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <div>
+                        <input type="text" name="body" placeholder="Write your message here....">
+                    </div>
+                </form>
+            </div>
+            {% else %}
+            <div>
+                <p>
+                    You need to be logged in to comment <a href="{% url 'login' %}">login</a>
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <div>
+        <h3>Participants</h3>
+        <hr>
+        <div>
+            {% for participant in participants %}
+            <div>
+                <a href="#">{{ participant.username }}</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
