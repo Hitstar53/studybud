@@ -965,7 +965,7 @@ a {
 
 .room__header {
   max-height: 30vh;
-  overflow-y: auto;
+  /* overflow-y: auto; */
   position: absolute;
   width: 95%;
   background: var(--color-dark);
@@ -985,7 +985,7 @@ a {
 .room__box {
   padding-left: 2rem;
   padding-right: 2rem;
-  height: 80.5vh;
+  height: 80vh;
   /* overflow-y: auto; */
   padding-bottom: 0;
 }
@@ -1038,11 +1038,11 @@ a {
   display: inline-block;
   font-size: 1.4rem;
   border-radius: 1.5rem;
-  margin: 1rem 0;
+  margin: auto 0;
 }
 
 .room__conversation {
-  margin-top: 1rem;
+  margin-top: -1.5rem;
   margin-bottom: 4rem;
   height: 64%;
 }
@@ -1065,7 +1065,7 @@ a {
 .thread {
   border-left: 2px solid var(--color-dark);
   padding-left: 1rem;
-  margin: 2rem 0;
+  margin: 0;
   padding: 2rem;
 }
 
@@ -1094,7 +1094,7 @@ a {
 
 .thread__details {
   font-size: 1.4rem;
-  margin-top: 0.5rem;
+  margin-top: 1rem;
 }
 
 .room__message {

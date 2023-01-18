@@ -65,11 +65,17 @@ def home(request):
             Q(description__icontains=q)
         )
     topic = Topic.objects.all()
+    topic = topic[:5]
     room_count = rooms.count()
 
     msgs = Message.objects.all().order_by('-created')
     if q:
         msgs = msgs.filter(Q(room__topic__name__icontains=q))
+
+    #limit the message body to 100 characters
+    for msg in msgs:
+        if len(msg.body)>50:
+            msg.body = msg.body[:50] + '...'
 
     context = {'rooms': rooms, 'topics': topic, 'room_count': room_count, 'msgs': msgs}
     return render(request, 'base/home.html', context)
@@ -174,3 +180,22 @@ def deleteMessage(request, pk):
         return redirect('room', pk=room)
     context = {'obj': msg}
     return render(request, 'base/delete.html', context)
+
+def topicsPage(request):
+    topics = Topic.objects.all()
+    q = request.GET.get('q')
+    if q:
+        topics = topics.filter(
+            Q(name__icontains=q)
+        )
+    context = {'topics': topics}
+    return render(request, 'base/topics.html', context)
+
+def activityPage(request):
+    msgs = Message.objects.all().order_by('-created')
+    msgs = msgs[:3]
+    for msg in msgs:
+        if len(msg.body)>50:
+            msg.body = msg.body[:50] + '...'
+    context = {'msgs': msgs}
+    return render(request, 'base/activity.html', context)
