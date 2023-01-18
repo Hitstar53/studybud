@@ -24,9 +24,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-*etq7ekc3b1p5@y!$tfjv!9hj@rrz5jym*-x0^2or7usnb^)x5'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://studybud-production-f1c2.up.railway.app/',
+]
 
 
 # Application definition
@@ -131,11 +135,8 @@ STATIC_URL = 'static/'
 #     BASE_DIR / 'static'
 # ]
 
-STATICFILES_DIRS = [
-    BASE_DIR / 'static'
-]
-
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT =os.path.join(BASE_DIR, 'staticfiles')
 
 MEDIA_ROOT = BASE_DIR / 'static/imgs/avatars'
 MEDIA_URL = '/imgs/avatars/'
