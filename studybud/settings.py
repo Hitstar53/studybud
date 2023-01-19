@@ -34,6 +34,7 @@ ALLOWED_HOSTS = [
 
 CSRF_TRUSTED_ORIGINS = [
     'https://studybud-production-f1c2.up.railway.app',
+    'https://studybud-production-f1c2.up.railway.app/',
     'localhost',
 ]
 
